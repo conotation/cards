@@ -16,8 +16,42 @@ router.get('/test', (req, res)=> {
     res.render('test', {})
 });
 
-// 게임 시작
+/**
+ * @api {GET} /start 게임 시작
+ * 
+ * @apiName startGame
+ * @apiGroup Game
+ * @apiVersion 1.0.0
+ * @apiDescription 게임 시작
+ * 
+ * @apiParam (Body string) {Number} gameNumber 결제 아이디
+ * @apiParam (Body string) {Number} gameTimerCnt 결제 아이디
+ * @apiParam (Body string) {Number} gameTimerAll 결제 아이디
+ * @apiParam (Body string) {Number} gamePlayerCnt 결제 아이디
+ * @apiParam (Body string) {Number} gameCategory 결제 아이디
 
+ *
+ * @TODO 추가예정
+ * 
+ * @apiSuccessExample {json} Response (example):
+ * {
+ *  code: 200,
+ *  msg: "Game Start"
+ * }
+ * 
+ * @apiError (Error 400) {boolean} statusCode 상태 코드
+ * @apiError (Error 400) {String} msg 에러 메시지를 반환합니다
+ * 
+ * @apiErrorExample {json} Response (example):
+ * {
+ *  code: 400,
+ *  msg: "Error Message Here"
+ * }
+ * 
+ * 수정해야되는데 일단 API 사용하는거 보고 수정 예정
+ */
+
+// 게임 시작
 
 router.post('/start', (req, res) => {
     let response = {}
@@ -53,6 +87,35 @@ router.post('/start', (req, res) => {
 // - resultCode, resultMsg -
 // gameTimerAll List<int> 는 고정된게 없는지?
 
+/**
+ * @api {GET} /end/:gameNumber 게임 종료
+ * 
+ * @apiName endGame
+ * @apiGroup Game
+ * @apiVersion 1.0.0
+ * @apiDescription 게임 종료
+ * 
+ * @apiParam (Body string) {Number} gameNumber 게임 번호
+ *
+ * 
+ * @apiSuccessExample {json} Response (example):
+ * {
+ *  code: 200,
+ *  msg: "Game End"
+ * }
+ * 
+ * @apiError (Error 400) {boolean} statusCode 상태 코드
+ * @apiError (Error 400) {String} msg 에러 메시지를 반환합니다
+ * 
+ * @apiErrorExample {json} Response (example):
+ * {
+ *  code: 400,
+ *  msg: "Error Message Here"
+ * }
+ * 
+ * 수정해야되는데 일단 API 사용하는거 보고 수정 예정
+ */
+
 // 게임 종료
 
 router.get('/end/:gn', (req, res) => {
@@ -86,6 +149,38 @@ router.get('/end/:gn', (req, res) => {
     })
 });
 
+/**
+ * @api {GET} /state/:gameNumber 게임 상태 조회
+ * 
+ * @apiName stateGame
+ * @apiGroup Game
+ * @apiVersion 1.0.0
+ * @apiDescription 게임 상태 조회
+ * 
+ * @apiParam (Body string) {Number} gameNumber 게임 번호
+ *
+ * @apiSuccessExample {json} Response (example):
+ * {
+ *  "gameNumber": 1,
+ *  "gameTimerCnt": 1,
+ *  "gameTimerAll": 3,
+ *  "gamePlayerCnt": 10,
+ *  "gameCategory": 1,
+ *  "runningGame": true
+ * }
+ * 
+ * @apiError (Error 400) {boolean} statusCode 상태 코드
+ * @apiError (Error 400) {String} msg 에러 메시지를 반환합니다
+ * 
+ * @apiErrorExample {json} Response (example):
+ * {
+ *  code: 400,
+ *  msg: "Error Message Here"
+ * }
+ * 
+ * 수정해야되는데 일단 API 사용하는거 보고 수정 예정
+ */
+
 // 게임 상태 조회
 
 router.get('/state/:gn', (req, res) => {
@@ -113,11 +208,38 @@ router.get('/state/:gn', (req, res) => {
 
 });
 
-// 게임 설정 조회
-
-router.get('/setting', (req, res) => {
-
-});
+/**
+ * @api {GET} /setting/:gameNumber 게임 설정 변경
+ * 
+ * @apiName settingGame
+ * @apiGroup Game
+ * @apiVersion 1.0.0
+ * @apiDescription 게임 설정 변경
+ * 
+ * @apiParam (Path string) {Number} gameNumber 게임 번호
+ * @apiParam (Body string) {Number} gameEditBlind 게임의 블라인드 단계
+ * @apiParam (Body string) {Number} gameEditTimer 게임의 타이머 수정
+ * @apiParam (Body string) {Number} gameEditPlayer 게임의 인원 수정
+ *
+ * @TODO 추가예정
+ * 
+ * @apiSuccessExample {json} Response (example):
+ * {
+ *  code: 200,
+ *  msg: "? 뭐넣지"
+ * }
+ * 
+ * @apiError (Error 400) {boolean} statusCode 상태 코드
+ * @apiError (Error 400) {String} msg 에러 메시지를 반환합니다
+ * 
+ * @apiErrorExample {json} Response (example):
+ * {
+ *  code: 400,
+ *  msg: "Error Message Here"
+ * }
+ * 
+ * 수정해야되는데 일단 API 사용하는거 보고 수정 예정
+ */
 
 // 게임 설정 초기화용
 

@@ -7,7 +7,8 @@
     "cards": "bin/www.js"
   },
   "scripts": {
-    "run": "nodemon bin/www"
+    "run": "nodemon bin/www",
+    "doc": "apidoc -i src -o apidoc"
   },
   "author": "",
   "license": "ISC",

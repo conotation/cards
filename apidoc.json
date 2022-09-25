@@ -1,0 +1,15 @@
+{
+    "name": "cards",
+    "version": "1.0.0",
+    "description": "cards API Doc",
+    "title": "Cards",
+    "url": "https://api.salend.tk",
+    "sampleUrl": null,
+    "header": {
+        "title": "Readme",
+        "filename": "README.md"
+    },
+    "order": [
+        "Common", "Game"
+    ]
+}

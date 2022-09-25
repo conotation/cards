@@ -1,0 +1,45 @@
+doctype html
+html(lang="ko")
+    head
+        title api test
+        meta(charset='utf-8')
+        script(src='/js/test.js' defer)
+        script(src='http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.12.4.min.js')
+
+    body
+        form(action="./setting/1" method="post")
+            table(border='1px solid black')
+                tr
+                    th gameNumber 
+                    td
+                        input(id='gameNumber' type='text' name='gameNumber')
+                tr
+                    th gameTimerCnt 
+                    td
+                        input(id='gameTimerCnt' type='text' name='gameTimerCnt')
+                tr       
+                    th gameTimerAll 
+                    td
+                        input(id='gameTimerAll' type='text' name='gameTimerAll')
+                tr
+                    th gamePlayerCnt 
+                    td
+                        input(id='gamePlayerCnt' type='text' name='gamePlayerCnt')
+                tr
+                    th gameCategory 
+                    td
+                        input(id='gameCategory' type='text' name='gameCategory')
+                tr
+                    th gameEditBlind 
+                    td
+                        input(id='gameEditBlind' type='text' name='gameEditBlind')
+                tr
+                    th gameEditTimer 
+                    td
+                        input(id='gameEditTimer' type='text' name='gameEditTimer')
+                tr
+                    th gameEditPlayer 
+                    td
+                        input(id='gameEditPlayer' type='text' name='gameEditPlayer')
+            button(submit) button
+            // p(id='button') button

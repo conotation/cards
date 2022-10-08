@@ -5,11 +5,13 @@ const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 // DB Connect 
 mongoose.connect('mongodb://localhost:27017/cards', {
         useNewUrlParser: true,
         useUnifiedTopology: true,
+        autoIndex: true
     })
     .then(() => {
         console.log("OPEN!!")

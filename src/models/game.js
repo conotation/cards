@@ -6,32 +6,52 @@ const gameSchema = new mongoose.Schema({
     gameNumber: {
         type: Number,
         required: true,
-        unique: true
+        unique: true,
+        sparse: true
     },
-    gameTimerCnt: {
+    timerCnt: {
         type: Number,
         required: true
     },
-    gameTimerAll: {
-        type: Number,
+    blindSmall: {
+        type: String,
         required: true
     },
-    gamePlayerCnt: {
+    blindBig: {
+        type: String,
+        required: true
+    },
+    playerCount: {
         type: Number,
         default: 0
     },
-    gameCategory: {
-        type: Number,
+    category: {
+        type: String,
         required: true
     },
     runningGame: {
-        type: Boolean,
-        required: true
+       type: Boolean,
+       required: true,
+       default: false 
+    },
+    endTime: {
+        type: String
+    },
+    finish: {
+        type: Number,
+        default: 1,
+    },
+    log: {
+        type: Number
     }
-
-});
+}, { _id: false });
 
 const Game = mongoose.model('Game', gameSchema)
+
+Game.init().then(() => {
+    console.log("db init...")
+})
+
 
 module.exports = Game
 

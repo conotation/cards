@@ -17,38 +17,44 @@ router.get('/test', (req, res)=> {
 });
 
 /**
- * @api {GET} /start 게임 시작
+ * @api {POST} /start 게임 시작
+ * 
  * 
  * @apiName startGame
  * @apiGroup Game
  * @apiVersion 1.0.0
  * @apiDescription 게임 시작
  * 
- * @apiParam (Body string) {Number} gameNumber 결제 아이디
- * @apiParam (Body string) {Number} gameTimerCnt 결제 아이디
- * @apiParam (Body string) {Number} gameTimerAll 결제 아이디
- * @apiParam (Body string) {Number} gamePlayerCnt 결제 아이디
- * @apiParam (Body string) {Number} gameCategory 결제 아이디
-
+ * @apiParam (Body string) {Number} gameNumber 게임 번호
+ * @apiParam (Body string) {Number} timerCnt 현재 블라인드 단계
+ * @apiParam (Body string) {Number} blindSmall 스몰 블라인드
+ * @apiParam (Body string) {Number} blindBig 빅 블라인드
+ * @apiParam (Body string) {Number} payerCount 참가 인원
+ * @apiParam (Body string) {Number} category 게임 종류
+ * 
  *
- * @TODO 추가예정
+ * @apiSuccess (Success 200) {boolean} success 성공 여부
+ * @apiSuccess {String} msg 행위 관련 메시지 
  * 
  * @apiSuccessExample {json} Response (example):
  * {
- *  code: 200,
+ *  success: true,
  *  msg: "Game Start"
  * }
  * 
- * @apiError (Error 400) {boolean} statusCode 상태 코드
- * @apiError (Error 400) {String} msg 에러 메시지를 반환합니다
+ * @apiError (Error 400) {boolean} success 성공 여부 
+ * @apiError (Error 400) {String} msg 상세 에러 메시지
  * 
  * @apiErrorExample {json} Response (example):
  * {
- *  code: 400,
+ *  success: false,
  *  msg: "Error Message Here"
  * }
  * 
- * 수정해야되는데 일단 API 사용하는거 보고 수정 예정
+ * Duplicate GameNumber : 중복된 게임 번호 존재
+ * Parameter Error : 파라미터 에러, 혹은 누락
+ * 
+ * 
  */
 
 // 게임 시작
@@ -56,36 +62,38 @@ router.get('/test', (req, res)=> {
 router.post('/start', (req, res) => {
     let response = {}
     let gn = req.body.gameNumber
-    let gtc = req.body.gameTimerCnt
-    let gta = req.body.gameTimerAll
-    let gpc = req.body.gamePlayerCnt
-    let gcg = req.body.gameCategory
+    let tc = req.body.timerCnt
+    let bs = req.body.blindSmall
+    let bb = req.body.blindBig
+    let pc = req.body.playerCount | 0
+    let ct = req.body.category
 
     const newGame = new Game({
         gameNumber: gn,
-        gameTimerCnt: gtc,
-        gameTimerAll: gta,
-        gamePlayerCnt: gpc,
-        gameCategory: gcg,
-        runningGame: true
+        timerCnt: tc,
+        blindSmall: bs,
+        blindBig: bb,
+        playerCount: pc,
+        category: ct
     });
 
     newGame.save()
         .then(p => {
             console.log("== New Game ==")
             console.log(p)
-            response = {code: 200, msg: "Game Start"}
+            response = {success: true, msg: "Game Start"}
             res.json(response)
-        }).catch(e => {
-            console.log(e);
-            response = {code: 400, msg: "DB Error"}
-            res.json(response)
-        })
-});
+        }).catch((e) => {
+            console.log(e)
+            if (e.code) {
+                response = {success: false, msg: "Duplicate GameNumber"}
+            } else if(e.errors){
+                response = {success: false, msg: "Parameter Error"}
+            }
 
-// + gameNumber, gameTimerCnt, gameTimerAll, gamePlayerCnt, gameCategory +
-// - resultCode, resultMsg -
-// gameTimerAll List<int> 는 고정된게 없는지?
+            res.status(400).json(response)
+        });
+});
 
 /**
  * @api {GET} /end/:gameNumber 게임 종료
@@ -93,27 +101,29 @@ router.post('/start', (req, res) => {
  * @apiName endGame
  * @apiGroup Game
  * @apiVersion 1.0.0
- * @apiDescription 게임 종료
+ * @apiDescription 게임 종료 (게임 기록 저장)
  * 
- * @apiParam (Body string) {Number} gameNumber 게임 번호
- *
+ * @apiParam (Path string) {Number} gameNumber 게임 번호
  * 
  * @apiSuccessExample {json} Response (example):
  * {
- *  code: 200,
+ *  success: true,
  *  msg: "Game End"
  * }
  * 
- * @apiError (Error 400) {boolean} statusCode 상태 코드
+ * @apiError (Error 400) {boolean} success 상태 코드
  * @apiError (Error 400) {String} msg 에러 메시지를 반환합니다
  * 
  * @apiErrorExample {json} Response (example):
  * {
- *  code: 400,
+ *  success: false,
  *  msg: "Error Message Here"
  * }
+ *
+ * Parameter Error : gameNumber를 확인해주세요.
+ * Not Found Game : gameNumber에 해당하는 게임이 없습니다.
+ * DB Error : 쿼리 처리 중 에러가 발생하였습니다.
  * 
- * 수정해야되는데 일단 API 사용하는거 보고 수정 예정
  */
 
 // 게임 종료
@@ -123,28 +133,31 @@ router.get('/end/:gn', (req, res) => {
     let gn = req.params.gn
 
     if (isNaN(gn)){
-        response = {code: 400, msg: "Query Error"}
-        res.json(response)
+        response = {success: false, msg: "Parameter Error"}
+        res.status(403).json(response)
         return
     }
 
     console.log(gn)
 
-    Game.findOneAndDelete({gameNumber: gn*1})
+    let filter = {gameNumber: gn*1, finish: 1}
+    let update = {finish: 0, gameNumber: null, log: gn*1}
+
+    Game.findOneAndUpdate(filter, update)
     .then(p => {
         if(p) {
             console.log("== End Game ==")
-            response = {code: 200, msg: "Game End"}
+            response = {success: true, msg: "Game End"}
             res.json(response)
         } else {
             console.log("== Not Found Game ==")
-            response = {code: 400, msg: "Not Found Game"}
+            response = {success: false, msg: "Not Found Game"}
             res.json(response)
         }
     })
     .catch(e => {
         console.log(e);
-        response = {code: 400, msg: "DB Error"}
+        response = {success: false, msg: "DB Error"}
         res.json(response)
     })
 });
@@ -209,7 +222,7 @@ router.get('/state/:gn', (req, res) => {
 });
 
 /**
- * @api {GET} /setting/:gameNumber 게임 설정 변경
+ * @api {POST} /setting/:gameNumber 게임 설정 변경
  * 
  * @apiName settingGame
  * @apiGroup Game
@@ -280,16 +293,67 @@ router.post('/setting/:gn', (req, res) => {
     
 });
 
+/**
+ * @api {GET} /event/:gameNumber 게임 미디어 이벤트
+ * 
+ * @apiName endGame
+ * @apiGroup Game
+ * @apiVersion 1.0.0
+ * @apiDescription 게임 종료 (게임 기록 저장)
+ * 
+ * @apiParam (Path) {Number} gameNumber 게임 번호
+ * @apiParam (Query) {Number} event 이벤트 종류 (0: 재생, 1: 일시정지, 2: 블라인드 레벨업)
+ * @apiParam (Query) {String} endtime 종료시간 (Nullable)
+ * 
+ * @apiSuccessExample {json} Response (example):
+ * {
+ *  success: true,
+ *  msg: "Game End"
+ * }
+ * 
+ * @apiError (Error 400) {boolean} success 상태 코드
+ * @apiError (Error 400) {String} msg 에러 메시지를 반환합니다
+ * 
+ * @apiErrorExample {json} Response (example):
+ * {
+ *  success: false,
+ *  msg: "Error Message Here"
+ * }
+ *
+ * Parameter Error : gameNumber를 확인해주세요.
+ * Not Found Game : gameNumber에 해당하는 게임이 없습니다.
+ * DB Error : 쿼리 처리 중 에러가 발생하였습니다.
+ * 
+ * 작업중
+ */
+
 // 게임 설정 변경 2
 
-router.put('/setting/:gn', (req, res) => {
+router.get('/event/:gn', (req, res) => {
     let response = {}
     let gn = req.params.gn
+    let ev = req.query.event
+    let endtime = req.query.endtime
 
-    if (isNaN(gn)){
+    if (isNaN(gn) && isNaN(ev)){
         response = {code: 400, msg: "Query Error"}
-        res.json(response)
+        res.status(400).json(response)
         return
+    }
+
+    if(ev == 1){
+        // 게임 일시 정지
+        let filter = {gameNumber: gn*1, finish: 1}
+        let update = {}
+        Game.findOneAndUpdate()
+        // 여기부터 작업하면됨
+
+    } else if (ev == 0) {
+        // 게임 시작
+
+    } else if (ev == 2) {
+        // 블라인드 레벨 업
+
     }
 
     Game.findOne({gameNumber: gn*1}, {_id: false, __v: false})

@@ -306,10 +306,10 @@ router.post('/setting/:gn', (req, res) => {
 /**
  * @api {POST} /event/:gameNumber 게임 미디어 이벤트
  * 
- * @apiName endGame
+ * @apiName eventChange
  * @apiGroup Game
  * @apiVersion 1.0.0
- * @apiDescription 게임 종료 (게임 기록 저장)
+ * @apiDescription 게임 미디어 이벤트 (게임 기록 저장)
  * 
  * @apiParam (Path) {Number} gameNumber 게임 번호
  * @apiParam (Body) {Number} event 이벤트 종류 (0: 재생, 1: 일시정지, 2: 블라인드 레벨업)
@@ -336,8 +336,7 @@ router.post('/setting/:gn', (req, res) => {
  * Not Found Game : gameNumber에 해당하는 게임이 없습니다.
  * DB Error : 쿼리 처리 중 에러가 발생하였습니다.
  * 
- * 작업중
- */
+z */
 
 // 게임 설정 변경 2
 

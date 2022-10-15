@@ -9,7 +9,7 @@ const gameSchema = new mongoose.Schema({
         unique: true,
         sparse: true
     },
-    timerCnt: {
+    blindMax: {
         type: Number,
         required: true
     },
@@ -20,6 +20,10 @@ const gameSchema = new mongoose.Schema({
     blindBig: {
         type: String,
         required: true
+    },
+    blindLevel: {
+        type: Number,
+        default: -1
     },
     playerCount: {
         type: Number,
@@ -44,7 +48,7 @@ const gameSchema = new mongoose.Schema({
     log: {
         type: Number
     }
-}, { _id: false });
+});
 
 const Game = mongoose.model('Game', gameSchema)
 
